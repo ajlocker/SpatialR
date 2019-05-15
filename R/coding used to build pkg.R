@@ -25,8 +25,4 @@ usethis::use_vignette("vignette", title = "Spatial Analysis in R")
 
 devtools::build_vignettes()
 
-https://github.com/ajlocker/SpatialR.git
-
-git remote add origin https://github.com/ajlocker/SpatialR.git
-git push -u origin master
 
