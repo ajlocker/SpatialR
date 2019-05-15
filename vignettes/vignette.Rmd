@@ -204,11 +204,6 @@ LiDAR essentially allows us to complete an aerial survey and remove the canopy l
 
 This tutorial uses the LiDAR data from Austin, TX, located in the SpatialR package. 
 
-```{r}
-demTIN <- system.file("extdata", "demTIN.tif", package = "SpatialR")
-```
-
-
 We are going to load in the data by assigning them to be rasters. The DEM file is a Digital Elevation Model, which tells R elevation values from the scanned LiDAR data. The hs file is a Hillslope image.  
 
 ```{r}
@@ -228,7 +223,6 @@ plot(dem, main="Digital Elevation Model \n Austin, Texas")
 So here, we can see basic elevation differences from the surveyed area, but it doesn't show us much detail from the LiDAR imaging. We can examine this data much more effectively by plotting it on top of the Hillshade file, which will essentially add depth to the map. 
 
 ```{r}
-hsTIN <- system.file("extdata", "hsTIN.tif", package = "SpatialR")
 hs <- raster("hsTIN")
 
 # view info about the raster.Pay attention to the extent portion. We'll be manipulating this data in a bit. 

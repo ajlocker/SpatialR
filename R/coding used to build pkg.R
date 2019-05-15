@@ -29,3 +29,4 @@ https://github.com/ajlocker/SpatialR.git
 
 git remote add origin https://github.com/ajlocker/SpatialR.git
 git push -u origin master
+
