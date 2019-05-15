@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r eval=FALSE}
 library(SpatialR)
 ```
 
@@ -51,7 +51,7 @@ library(rayshader)
 
 #First, load in the data
 
-mydata1 <-readOGR(".", "Zipped_SPA_Shape_file")
+mydata1 <-shapefile("../data-raw/Zipped_SPA_Shape_file.shp")
 mydata1
 head(mydata1)
 ```
@@ -112,7 +112,7 @@ For this example, you'll be using a dataset from Peru.
 ```{R}
 
 # Loading and plotting shapefile (Peru and its departamentos)
-DEPARTAMENTO <- readOGR(".", "DEPARTAMENTO")
+DEPARTAMENTO <- shapefile("../data-raw/DEPARTAMENTO.shp")
 # Setting the coordinate system for the shapefile
 proj4string(DEPARTAMENTO) <- CRS("+init=EPSG:32718")
 plot(DEPARTAMENTO)
@@ -123,7 +123,7 @@ This shapefile represents a map of Peru with the departments outlined. We will p
 ```{R}
 
 # Loading and plotting point data (recorded archaeological sites in Peru)
-SitioArqueologico <- readOGR(".", "SitioArqueologico")
+SitioArqueologico <- shapefile("../data-raw/SitioArqueologico.shp")
 # Setting the coordinate system for the point data
 proj4string(SitioArqueologico) <- CRS("+init=EPSG:32718")
 plot(SitioArqueologico)
@@ -208,7 +208,7 @@ We are going to load in the data by assigning them to be rasters. The DEM file i
 
 ```{r}
 # assign raster to object
-dem <- raster("demTIN")
+dem <- raster("../data-raw/demTIN.tif")
 
 # view info about the raster.
 dem
@@ -223,7 +223,7 @@ plot(dem, main="Digital Elevation Model \n Austin, Texas")
 So here, we can see basic elevation differences from the surveyed area, but it doesn't show us much detail from the LiDAR imaging. We can examine this data much more effectively by plotting it on top of the Hillshade file, which will essentially add depth to the map. 
 
 ```{r}
-hs <- raster("hsTIN")
+hs <- raster("../data-raw/hsTIN.tif")
 
 # view info about the raster.Pay attention to the extent portion. We'll be manipulating this data in a bit. 
 hs
@@ -250,7 +250,7 @@ We're going to plot our lidar data onto an existing map. We can then zoom in and
 
 
 ```{r}
-hs <- raster("hsTIN")
+hs <- raster("../data-raw/hsTIN.tif")
 pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(hs),
   na.color = "transparent")
 
