@@ -1,0 +1,28 @@
+Package: SpatialR
+Title: A quick module for demonstrating spatial analysis in R.
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Angelina",
+           family = "Locker",
+           role = c("aut", "cre"),
+           email = "angelina.sweeney@utexas.edu",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This module is used to lightly scratch the surface regarding the potential for using R the 
+    import and analyze spatial data. We will show you how to import shape, point, and raster files, how to 
+    run some basic statistics on your collected data, and how to generate interactive and 3D maps. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    tmap,
+    leaflet,
+    rgdal,
+    rgeos,
+    sp,
+    raster,
+    adehabitatHR
+RoxygenNote: 6.1.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

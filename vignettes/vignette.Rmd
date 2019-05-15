@@ -1,0 +1,352 @@
+---
+title: "Spatial Analysis in R"
+author: "Julia Earle, Fatemeh Ghaheri, and Angelina Locker"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Spatial Analysis in R}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(SpatialR)
+```
+
+##Objectives
+The objective of this module is to demonstrate some of the capabilities R has for handling spatial data. We will provide you with a brief overview of the various formats of spatial data, explain how to import spatial data into R, and provide a few examples of spatial data manipulation.  
+
+
+## Important Vocabulary:
+**Shapefile** is a data storage format where you can store different types of geographic information and geospatial data such as location, shape, line and points and their various details such as names etc. The information in a shapefile is actually a big set of files with large data in them combined within one shapefile. Like a csv file shapefile (shp file for short) also has different set of details and files where large data is stored that can be seen in columns when loaded to R. Many GIS applications and softwares such as ArcGIS use shp file for their visualizations, mapping and analyses. But since they are not usually free it’s a great feature that R has as a free tool.
+
+**Point data** represent distinct and separate points and are commonly defined by their geographic coordination and can be located within a polygon, for example location of a bridge and an archaeological site can be shown as a point.
+
+**Raster data** or “gridded” data represents surfaces and are saved as pixels where each pixel represents a surface.  
+
+First we will show how you to load GIS data into R and manipulate it to create basic maps.
+
+## Using spatial data in R
+
+For this part of the module. You'll be working with a dataset from Arizon within the SpatialR package. 
+
+Using one line of code you can load shapefiles into R and read them. Note: The “.” is the source
+
+```{r}
+library(tmap)
+library(leaflet)
+library(rgdal)
+library(rgeo)
+library(sp)
+library(raster)
+library(adehabitatHR)
+library(devtools)
+library(rayshader)
+
+#First, load in the data
+system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
+system.file("extdata", "Zipped_SPA_Shape_file.dbf", package = "SpatialR")
+system.file("extdata", "Zipped_SPA_Shape_file.prj", package = "SpatialR")
+system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
+system.file("extdata", "Zipped_SPA_Shape_file.shx", package = "SpatialR")
+system.file("extdata", "Zipped_SPA_Shape_file.xml", package = "SpatialR")
+system.file("extdata", "data1964al.xy", package = "SpatialR")
+
+mydata1 <-readOGR(".", "Zipped_SPA_Shape_file")
+mydata1
+head(mydata1)
+```
+
+Plot the data as a map:
+```{R}
+plot(mydata1)
+```
+
+You can create a choropleth map of any variable. In this case we'll be looking as "SQ_MILES"
+
+With a choropleth map you can show statistical data with different specifications, such as color and symbols shading on the map. 
+
+The qtm function allows you draw a thematic map. When you add "fill="   to the code, you specify how you want your details to be shown on the map. Without "fill=""  you will just get a map.
+
+```{r}
+m <- qtm(mydata1, fill = "SQ_MILES")
+m
+```
+
+If you don't want to include the borders from the map, you can simply remove them. 
+```{R}
+tm_shape(mydata1) + tm_fill("SQ_MILES")
+```
+
+If you want to add them back, you use the tm_borders() function: 
+```{R}
+# Alpha is the transparency of the borders 
+tm_shape(mydata1) + tm_fill("SQ_MILES") + tm_borders(alpha=.9)
+```
+
+tm_compass() adds a north arrow to a map:
+```{R}
+tm_shape(mydata1) + tm_fill("SQ_MILES") + tm_compass()
+```
+
+If you want to add a title and legend:
+```{R}
+tm_shape(mydata1) + tm_fill("SQ_MILES", palette = "Reds",
+style = "quantile", title = "% with a SQ_MILES") +
+tm_borders(alpha=.4) +
+tm_compass() +
+tm_layout(title = "Camden, Arizona", legend.text.size = 1.1,
+legend.title.size = 1.4, legend.position = c("right", "top"), frame = FALSE)
+```
+
+##Density Mapping
+
+In the density mapping section, we will learn how to visualize concentrations of point data. Specifically, we will use kernel density estimation to calculate where the highest concentrations of point data are located in our data set.
+
+Density mapping is a means of visualizing concentrations of spatial phenomena. Point data are most often used for density mapping, but lines can also be used. If you have a high volume of point data distributed across a large area, it may be difficult to understand the distribution of points. Density maps can simplify this data by showing where points are concentrated.
+
+Density mapping can be incredibly useful when you have a large data set representing isolated phenomena over a continuous surface (e.g., artifacts, populations). As such, density mapping would not be useful for representing small data sets, or data that represents continuous phenomena (e.g., elevation or temperature). With spatial data visualization it is important to understand first what kind of data you have, and what you want to represent or analyze.
+
+###Example 
+For this example, you'll be using a dataset from Peru. 
+
+```{R}
+#First, load in the data
+system.file("extdata", "DEPARTAMENTO.shp", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.cpg", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.dbf", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.prj", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.sbn", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.sbx", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.shp.xml", package = "SpatialR")
+system.file("extdata", "DEPARTAMENTO.shx", package = "SpatialR")
+
+# Loading and plotting shapefile (Peru and its departamentos)
+DEPARTAMENTO <- readOGR(".", "DEPARTAMENTO")
+# Setting the coordinate system for the shapefile
+proj4string(DEPARTAMENTO) <- CRS("+init=EPSG:32718")
+plot(DEPARTAMENTO)
+```
+
+This shapefile represents a map of Peru with the departments outlined. We will plot the distribution of recorded archaeological sites in Peru onto this map.
+
+```{R}
+#Load in the raw data:
+system.file("extdata", "SitioArqueologico.shp", package = "SpatialR")
+system.file("extdata", "SitioArqueologico.dbf", package = "SpatialR")
+system.file("extdata", "SitioArqueologico.prj", package = "SpatialR")
+system.file("extdata", "SitioArqueologico.sbn", package = "SpatialR")
+system.file("extdata", "SitioArqueologico.sbx", package = "SpatialR")
+system.file("extdata", "SitioArqueologico.shp.xml", package = "SpatialR")
+system.file("extdata", "SitioArqueologico.shx", package = "SpatialR")
+
+# Loading and plotting point data (recorded archaeological sites in Peru)
+SitioArqueologico <- readOGR(".", "SitioArqueologico")
+# Setting the coordinate system for the point data
+proj4string(SitioArqueologico) <- CRS("+init=EPSG:32718")
+plot(SitioArqueologico)
+```
+
+## Kernel density estimation
+
+To begin, we will perform kernel density estimation on the point data. Kernel density estimation uses a moving quadrant to calculate the density of points for each area within a given threshold.
+
+For kernel density estimation, be sure you have loaded the package "adehabitatHR" into your library. Here we use the kernelUD function. UD refers to Utilization Distribution, which is a bivariate function. Other functions are available to calculate kernel density in this package.
+
+These points represent the distribution of recorded archaeological sites in Peru. Here we see that we have a very high density of points and it is difficult to distinguish where the higher concentrations of points are located at this resolution.
+
+```{R}
+kde.output <- kernelUD(SitioArqueologico, h="href", grid = 1000)
+# Grid determines how many pixels will be used for the map. Using a smaller number of pixels will run faster, but will not be as detailed. Grid value should be selected according to how much detail you need to represent.
+plot(kde.output)
+```
+
+If we want to map this density estimate, we need to first convert it to a raster.
+
+```{R}
+# Convert to raster
+kde <- raster(kde.output)
+# Map raster
+tm_shape(kde) + tm_raster("ud")
+```
+
+The value in the legend refers to the value calculated from the UD function. A higher UD corresponds to a higher density here.
+
+These maps are much more useful than the original point data to tell us about where most archaeological sites have been recorded. However, without the boundaries of the country of Peru and its departments, it is difficult to determine where exactly the highest densities of archaeological sites are located. To this end, we will plot our kernel density estimates on the original shapefile. 
+
+We cannot map the kernel density directly onto the shapefiles, so we must create 'catchment areas' at 75%, 50%, and 25% intervals.
+
+```{R}
+# Mask the raster by the output area polygon
+masked_kde <- mask(kde, SitioArqueologico)
+# Catchment boundaries for kernel density estimates
+# Top 75% highest density
+range75 <- getverticeshr(kde.output, percent = 75)
+plot(range75)
+```
+
+```{R}
+# Top 50% highest density
+range50 <- getverticeshr(kde.output, percent = 50)
+plot(range50)
+```
+
+```{R}
+# Top 25% highest density
+range25 <- getverticeshr(kde.output, percent = 25)
+plot(range25)
+```
+
+With this code we have generated our catchment areas, which we can map onto the shape file and point data. Next, we will map the point data and the catchment boundaries onto our original map of Peru with its departments.
+
+```{R}
+tm_shape(DEPARTAMENTO) + tm_fill(col = "#f0f0f0") + tm_borders(alpha=.8, col = "white") + tm_shape(SitioArqueologico) + tm_dots(col = "blue") +
+tm_shape(range75) + tm_borders(alpha=.7, col = "#fb6a4a", lwd = 2) + tm_fill(alpha=.1, col = "#fb6a4a") +
+tm_shape(range50) + tm_borders(alpha=.7, col = "#de2d26", lwd = 2) +
+tm_fill(alpha=.1, col = "#de2d26") +
+tm_shape(range25) + tm_borders(alpha=.7, col = "#a50f15", lwd = 2) +
+tm_fill(alpha=.1, col = "#a50f15") + tm_layout(frame = FALSE)
+```
+
+To review, with the code outlined above we have calculated kernel density estimates and mapped these densities onto shapefiles and point data in order to understand where the highest densities of points are located on our map.
+
+#LiDAR Data and R
+
+**Li**ght **D**etection **A**nd **R**anging **(LiDAR)** is very useful survey method that uses pulses of laser light to measure reflected distance between a given sensor (typically on the bottom of an airplane) and a survey area. 
+
+![LiDAR Illustration](Lidar-Graphic1.jpg)
+
+This becomes exceptionally useful when your research area is in the middle of a neo-tropical jungle. 3D images and maps can be created based on the differences in response time, where objects that are higher in elevation are returned more quickly than objects lower in elevation.  
+
+![Caana Temple, Caracol](Jungle with Pyramid.jpg)
+
+You can see that the forest canopy is fairly dense around the site. LiDAR essentially allows us to complete an aerial survey and remove the canopy layer to see what is happening below the tree line. We then have the ability to "groundtruth" the LiDAR data to see if the data match what is actually on the surface. 
+
+![Caracol map compared to LiDAR imagery](Caracol LiDAR Map.jpg)
+
+##Using LiDAR data to create Digital Elevation Models in R
+
+This tutorial uses the LiDAR data from Austin, TX, located in the SpatialR package. 
+
+```{r}
+system.file("extdata", "demTIN.tif", package = "SpatialR")
+```
+
+
+We are going to load in the data by assigning them to be rasters. The DEM file is a Digital Elevation Model, which tells R elevation values from the scanned LiDAR data. The hs file is a Hillslope image.  
+
+```{r}
+# assign raster to object
+dem <- raster("demTIN.tif")
+
+# view info about the raster.
+dem
+```
+
+Plot the Digital Elevation Model
+```{r}
+plot(dem, main="Digital Elevation Model \n Austin, Texas")
+```
+
+
+So here, we can see basic elevation differences from the surveyed area, but it doesn't show us much detail from the LiDAR imaging. We can examine this data much more effectively by plotting it on top of the Hillshade file, which will essentially add depth to the map. 
+
+```{r}
+system.file("extdata", "hsTIN.tif", package = "SpatialR")
+hs <- raster("hsTIN.tif")
+
+# view info about the raster.Pay attention to the extent portion. We'll be manipulating this data in a bit. 
+hs
+```
+
+```{r}
+# plot hillshade file
+plot(hs,
+        col=grey(1:100/100),  # creates a gray scale coloring for the hillshade data
+        legend=FALSE,         # removes any legend
+        main="LiDAR Survey Austin, Tx", #sets the title of the image
+        axes=TRUE)          # keeps axes titles so we can see the coresponding extent data (xmin, xmax, ymin, ymax)
+
+#then plot the DEM ontop of the hillshade
+plot(dem, 
+        axes=T,
+        alpha=0.5,   # transparency of the object (0=transparent, 1=not transparent)
+        add=T)  # add=TRUE (or T); this will add the chm plot on top of the plot we coded immediately above
+```
+
+#Creating an Interactive Map
+
+We're going to plot our lidar data onto an existing map. We can then zoom in and out to see where our data are geographically.
+
+
+```{r}
+hs <- raster("hsTIN.tif")
+pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(hs),
+  na.color = "transparent")
+
+leaflet() %>% addTiles() %>%
+  addRasterImage(hs, colors = pal, opacity = 0.8) %>%
+  addLegend(pal = pal, values = values(hs),
+    title = "Elevation")
+```
+`
+#Creating 3D Maps
+For this section, we will mainpulate raster images to generate a 3D map. 
+
+We're going to use a raster file of just elevation points to generate this map. First, I'm going to have you crop the data to make the map a bit more dramatic looking. We're going to crop the data to a specific quandrant. To do this, we'll use the {raster} package.
+
+If we look back at our DEM maps, we are going to target the bottom left corner of the image. The axes on the DEM correlate to the extent data from the raster information we pulled. We are going to crop our raster, using the as(extent()) function from the {raster} package
+
+```{r}
+cp <- as(extent(620669, 620900, 3348680, 3349000), 'SpatialPolygons') #Here we are telling R what our new map coordinates will be on a UTM coordinate system and that we want to turn our Raster into spatialpolygons. 
+crs(cp) <- crs(dem) #crs stands for Coordinate Reference System, and gives us map projection information
+atxcp <- crop(dem, cp) #Here we crop the map to be our selected area. 
+atxcp
+plot(atxcp) #plot to see the new area. 
+```
+
+Now that our raster is cropped, we will create our 3D maps. 
+```{r}
+#First we need to convert our cropped raster file to a matrix:
+atxmat = matrix(raster::extract(atxcp,raster::extent(atxcp),buffer=1000),
+               nrow=ncol(atxcp),ncol=nrow(atxcp))
+
+#Then we are going to plot with a slight shadow
+atxmat %>%
+  sphere_shade(texture = "bw") %>%
+  add_shadow(ray_shade(atxmat,lambert = TRUE), 0.7) %>%
+    plot_map()
+```
+
+```{r}
+#adds ambient shading to the map
+ambmat = ambient_shade(atxmat)
+
+#This will generate a 3D interactive map. It should generate a pop-up window that you can then use your mouse to move around as you wish. You can view from the side to see the elevations, zoom in or out, rotate around, etc. 
+atxmat %>%
+  sphere_shade(texture = "bw") %>%
+  add_water(detect_water(atxmat), color="bw") %>%
+  add_shadow(ray_shade(atxmat,zscale=3,maxsearch = 300),0.5) %>%
+  add_shadow(ambmat,0.5) %>%
+  plot_3d(atxmat,zscale=10,fov=0,theta=135,zoom=0.75,phi=45, windowsize = c(1000,800))
+render_snapshot()
+```
+
+You could then take this 3D generated plot and print it on a 3D printer using the command save_3dprint("atx.stl")
+
+###References
+Rayshader.com
+
+https://www.neonscience.org/neon-lidar-rasters-workshop-20150514
+
+https://gis.stackexchange.com/questions/229356/crop-a-raster-file-in-r
+
+Lansley, G., & Cheshire, J. (2016). "An Introduction to Spatial Data Analysis and Visualisation in R". Consumer Data Research Centre.
+
+ 
