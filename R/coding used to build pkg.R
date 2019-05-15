@@ -23,6 +23,12 @@ devtools::check()
 
 usethis::use_vignette("vignette", title = "Spatial Analysis in R")
 
+usethis::use_data_raw("DEPARTAMENTO")
+usethis::use_data_raw("SitioArqueologico")
+usethis::use_data_raw("Zipped_SPA_Shape_file")
+usethis::use_data_raw("demTIN")
+usethis::use_data_raw("hsTIN")
+
 devtools::build_vignettes()
 
 
