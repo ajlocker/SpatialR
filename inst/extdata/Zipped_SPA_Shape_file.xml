@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+<idinfo>
+<citation>
+<citeinfo>
+<origin/>
+<pubdate>20190205</pubdate>
+<title>Zipped SPA Shape file</title>
+<onlink>https://services.arcgis.com/rAkRDX3xCHZjZTGW/arcgis/rest/services/Zipped_SPA_Shape_file/FeatureServer</onlink>
+</citeinfo>
+</citation>
+<descript>
+<abstract>Shape file containing Surprise Special Planning Areas within our General Planning Area.</abstract>
+<purpose>Special Planning Areas Shape file</purpose>
+</descript>
+<keywords>
+<theme>
+<themekt>None</themekt>
+<themekey>SPA</themekey>
+<themekey>Special</themekey>
+<themekey>Pl</themekey>
+<themekey>Sur</themekey>
+<themekey>boundaries</themekey>
+</theme>
+</keywords>
+<accconst>None</accconst>
+<useconst>Data dictionary available for this feature to further explain the attributes and fields.</useconst>
+</idinfo>
+<metainfo>
+<metd>20190205</metd>
+<metc>
+<cntinfo>
+<!--no contact person or organization name available-->
+</cntinfo>
+</metc>
+<metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+<metstdv>FGDC-STD-001-1998</metstdv>
+<mettc>local time</mettc>
+</metainfo>
+</metadata>
