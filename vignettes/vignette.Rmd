@@ -50,13 +50,6 @@ library(devtools)
 library(rayshader)
 
 #First, load in the data
-Zipped_SPA_Shape_file <- system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
-system.file("extdata", "Zipped_SPA_Shape_file.dbf", package = "SpatialR")
-system.file("extdata", "Zipped_SPA_Shape_file.prj", package = "SpatialR")
-system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
-system.file("extdata", "Zipped_SPA_Shape_file.shx", package = "SpatialR")
-system.file("extdata", "Zipped_SPA_Shape_file.xml", package = "SpatialR")
-system.file("extdata", "data1964al.xy", package = "SpatialR")
 
 mydata1 <-readOGR(".", "Zipped_SPA_Shape_file")
 mydata1
@@ -117,16 +110,6 @@ Density mapping can be incredibly useful when you have a large data set represen
 For this example, you'll be using a dataset from Peru. 
 
 ```{R}
-#First, load in the data
-
-DEPARTAMENTO <- system.file("extdata", "DEPARTAMENTO.shp", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.cpg", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.dbf", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.prj", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.sbn", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.sbx", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.shp.xml", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
-system.file("extdata", "DEPARTAMENTO.shx", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
 
 # Loading and plotting shapefile (Peru and its departamentos)
 DEPARTAMENTO <- readOGR(".", "DEPARTAMENTO")
@@ -138,14 +121,6 @@ plot(DEPARTAMENTO)
 This shapefile represents a map of Peru with the departments outlined. We will plot the distribution of recorded archaeological sites in Peru onto this map.
 
 ```{R}
-#Load in the raw data:
-SitioArqueologico <- system.file("extdata", "SitioArqueologico.shp", package = "SpatialR")
-system.file("extdata", "SitioArqueologico.dbf", package = "SpatialR")
-system.file("extdata", "SitioArqueologico.prj", package = "SpatialR")
-system.file("extdata", "SitioArqueologico.sbn", package = "SpatialR")
-system.file("extdata", "SitioArqueologico.sbx", package = "SpatialR")
-system.file("extdata", "SitioArqueologico.shp.xml", package = "SpatialR")
-system.file("extdata", "SitioArqueologico.shx", package = "SpatialR")
 
 # Loading and plotting point data (recorded archaeological sites in Peru)
 SitioArqueologico <- readOGR(".", "SitioArqueologico")

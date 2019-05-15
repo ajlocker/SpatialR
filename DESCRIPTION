@@ -20,7 +20,9 @@ Imports:
     rgeos,
     sp,
     raster,
-    adehabitatHR
+    adehabitatHR,
+    devtools,
+    rayshader
 RoxygenNote: 6.1.1
 Suggests: 
     knitr,
