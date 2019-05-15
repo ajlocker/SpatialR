@@ -42,7 +42,7 @@ Using one line of code you can load shapefiles into R and read them. Note: The â
 library(tmap)
 library(leaflet)
 library(rgdal)
-library(rgeo)
+library(rgeos)
 library(sp)
 library(raster)
 library(adehabitatHR)
@@ -50,7 +50,7 @@ library(devtools)
 library(rayshader)
 
 #First, load in the data
-system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
+Zipped_SPA_Shape_file <- system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
 system.file("extdata", "Zipped_SPA_Shape_file.dbf", package = "SpatialR")
 system.file("extdata", "Zipped_SPA_Shape_file.prj", package = "SpatialR")
 system.file("extdata", "Zipped_SPA_Shape_file.shp", package = "SpatialR")
@@ -118,14 +118,15 @@ For this example, you'll be using a dataset from Peru.
 
 ```{R}
 #First, load in the data
-system.file("extdata", "DEPARTAMENTO.shp", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.cpg", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.dbf", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.prj", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.sbn", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.sbx", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.shp.xml", package = "SpatialR")
-system.file("extdata", "DEPARTAMENTO.shx", package = "SpatialR")
+
+DEPARTAMENTO <- system.file("extdata", "DEPARTAMENTO.shp", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.cpg", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.dbf", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.prj", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.sbn", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.sbx", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.shp.xml", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
+system.file("extdata", "DEPARTAMENTO.shx", package = "SpatialR", lib.loc = NULL, mustWork = TRUE)
 
 # Loading and plotting shapefile (Peru and its departamentos)
 DEPARTAMENTO <- readOGR(".", "DEPARTAMENTO")
@@ -138,7 +139,7 @@ This shapefile represents a map of Peru with the departments outlined. We will p
 
 ```{R}
 #Load in the raw data:
-system.file("extdata", "SitioArqueologico.shp", package = "SpatialR")
+SitioArqueologico <- system.file("extdata", "SitioArqueologico.shp", package = "SpatialR")
 system.file("extdata", "SitioArqueologico.dbf", package = "SpatialR")
 system.file("extdata", "SitioArqueologico.prj", package = "SpatialR")
 system.file("extdata", "SitioArqueologico.sbn", package = "SpatialR")
@@ -220,22 +221,16 @@ To review, with the code outlined above we have calculated kernel density estima
 
 **Li**ght **D**etection **A**nd **R**anging **(LiDAR)** is very useful survey method that uses pulses of laser light to measure reflected distance between a given sensor (typically on the bottom of an airplane) and a survey area. 
 
-![LiDAR Illustration](Lidar-Graphic1.jpg)
-
 This becomes exceptionally useful when your research area is in the middle of a neo-tropical jungle. 3D images and maps can be created based on the differences in response time, where objects that are higher in elevation are returned more quickly than objects lower in elevation.  
 
-![Caana Temple, Caracol](Jungle with Pyramid.jpg)
-
-You can see that the forest canopy is fairly dense around the site. LiDAR essentially allows us to complete an aerial survey and remove the canopy layer to see what is happening below the tree line. We then have the ability to "groundtruth" the LiDAR data to see if the data match what is actually on the surface. 
-
-![Caracol map compared to LiDAR imagery](Caracol LiDAR Map.jpg)
+LiDAR essentially allows us to complete an aerial survey and remove the canopy layer to see what is happening below the tree line. We then have the ability to "groundtruth" the LiDAR data to see if the data match what is actually on the surface. 
 
 ##Using LiDAR data to create Digital Elevation Models in R
 
 This tutorial uses the LiDAR data from Austin, TX, located in the SpatialR package. 
 
 ```{r}
-system.file("extdata", "demTIN.tif", package = "SpatialR")
+demTIN <- system.file("extdata", "demTIN.tif", package = "SpatialR")
 ```
 
 
@@ -243,7 +238,7 @@ We are going to load in the data by assigning them to be rasters. The DEM file i
 
 ```{r}
 # assign raster to object
-dem <- raster("demTIN.tif")
+dem <- raster("demTIN")
 
 # view info about the raster.
 dem
@@ -258,8 +253,8 @@ plot(dem, main="Digital Elevation Model \n Austin, Texas")
 So here, we can see basic elevation differences from the surveyed area, but it doesn't show us much detail from the LiDAR imaging. We can examine this data much more effectively by plotting it on top of the Hillshade file, which will essentially add depth to the map. 
 
 ```{r}
-system.file("extdata", "hsTIN.tif", package = "SpatialR")
-hs <- raster("hsTIN.tif")
+hsTIN <- system.file("extdata", "hsTIN.tif", package = "SpatialR")
+hs <- raster("hsTIN")
 
 # view info about the raster.Pay attention to the extent portion. We'll be manipulating this data in a bit. 
 hs
@@ -286,7 +281,7 @@ We're going to plot our lidar data onto an existing map. We can then zoom in and
 
 
 ```{r}
-hs <- raster("hsTIN.tif")
+hs <- raster("hsTIN")
 pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(hs),
   na.color = "transparent")
 
